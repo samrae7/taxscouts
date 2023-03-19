@@ -1,5 +1,9 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { debounce } from 'lodash';
+import { ThemeProvider } from 'styled-components';
+import { myTheme } from './styled-components/default-theme';
+import { Title } from './styled-components/Title';
 
 type BookDatum = {
     cover_i: number;
@@ -16,6 +20,7 @@ type BookDatum = {
 
 function App() {
     const [searchTerm, setSearchTem] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const [results, setResults] = useState<BookDatum[]>([]);
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
@@ -26,25 +31,41 @@ function App() {
         }
     }
 
+    const debouncedChangeHandler = useCallback(debounce(handleChange, 300), []);
+
     useEffect(() => {
+        setIsLoading(true);
         axios
             .get<{ docs: BookDatum[] }>(
                 `https://openlibrary.org/search.json?q=${searchTerm}`
             )
-            .then(({ data }) => setResults(data.docs));
+            .then(({ data }) => {
+                setResults(data.docs);
+                setIsLoading(false);
+            });
     }, [searchTerm]);
 
     return (
-        <div className="App">
-            <h1>Vite + React</h1>
-            <label htmlFor="search">search</label>
-            <input id="search" onChange={handleChange} type="text"></input>
-            <ul>
-                {results.map((result) => {
-                    return <li>{result.title}</li>;
-                })}
-            </ul>
-        </div>
+        <ThemeProvider theme={myTheme}>
+            <div className="App">
+                <Title>Vite + React</Title>
+                <label htmlFor="search">search</label>
+                <input
+                    id="search"
+                    onChange={debouncedChangeHandler}
+                    type="text"
+                ></input>
+                {isLoading ? (
+                    <div>Loading...</div>
+                ) : (
+                    <ul>
+                        {results.map(({ title, key }) => {
+                            return <li key={key}>{title}</li>;
+                        })}
+                    </ul>
+                )}
+            </div>
+        </ThemeProvider>
     );
 }
 
