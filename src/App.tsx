@@ -1,11 +1,13 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
 import { debounce } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import { myTheme } from './styled-components/default-theme';
 import { Title } from './styled-components/Title';
 
-type BookDatum = {
+import { useAppSelector, useAppDispatch } from './redux/hooks';
+import { fetchBooks } from './redux/bookSlice';
+
+export type BookDatum = {
     cover_i: number;
     has_fulltext: boolean;
     edition_count: number;
@@ -19,31 +21,28 @@ type BookDatum = {
 };
 
 function App() {
+    const dispatch = useAppDispatch();
+
     const [searchTerm, setSearchTem] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [results, setResults] = useState<BookDatum[]>([]);
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         const query = event.target.value;
-        console.log({ query });
-        if (query && query.length > 1) {
+        if (query) {
             setSearchTem(query);
         }
     }
 
+    // TODO use pagination?
+
+    // TODO useMemo instead ?
     const debouncedChangeHandler = useCallback(debounce(handleChange, 300), []);
 
     useEffect(() => {
-        setIsLoading(true);
-        axios
-            .get<{ docs: BookDatum[] }>(
-                `https://openlibrary.org/search.json?q=${searchTerm}`
-            )
-            .then(({ data }) => {
-                setResults(data.docs);
-                setIsLoading(false);
-            });
-    }, [searchTerm]);
+        dispatch(fetchBooks(searchTerm));
+    }, [searchTerm, dispatch]);
+
+    const results = useAppSelector((state) => state.books.list);
+    const isLoading = useAppSelector((state) => state.books.isLoading);
 
     return (
         <ThemeProvider theme={myTheme}>
