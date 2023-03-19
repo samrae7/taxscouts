@@ -9,7 +9,10 @@ describe('App', () => {
         (axios.get as jest.Mock).mockImplementation(() =>
             Promise.resolve({
                 data: {
-                    docs: [{ title: 'LOTR1' }, { title: 'LOTR2' }],
+                    docs: [
+                        { title: 'LOTR1', key: 'key1' },
+                        { title: 'LOTR2', key: 'key2' },
+                    ],
                 },
             })
         );
