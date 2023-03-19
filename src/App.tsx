@@ -2,10 +2,11 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { debounce } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import { myTheme } from './styled-components/default-theme';
-import { Title } from './styled-components/Title';
 
 import { useAppSelector, useAppDispatch } from './redux/hooks';
 import { fetchBooks } from './redux/bookSlice';
+import { TextInput } from './styled-components/TextInput';
+import { Nav } from './styled-components/Nav';
 
 export type BookDatum = {
     cover_i: number;
@@ -47,13 +48,20 @@ function App() {
     return (
         <ThemeProvider theme={myTheme}>
             <div className="App">
-                <Title>Vite + React</Title>
-                <label htmlFor="search">search</label>
-                <input
-                    id="search"
-                    onChange={debouncedChangeHandler}
-                    type="text"
-                ></input>
+                <header>
+                    <Nav>
+                        <label hidden htmlFor="search">
+                            search
+                        </label>
+                        <TextInput
+                            id="search"
+                            onChange={debouncedChangeHandler}
+                            type="text"
+                            placeholder="Quick search..."
+                        />
+                    </Nav>
+                </header>
+
                 {isLoading ? (
                     <div>Loading...</div>
                 ) : (

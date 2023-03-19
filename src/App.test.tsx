@@ -1,6 +1,8 @@
 import App from './App';
 import { render, screen, fireEvent } from '@testing-library/react';
 import axios from 'axios';
+import { Provider } from 'react-redux';
+import { store } from './redux/store';
 
 jest.mock('axios');
 
@@ -19,7 +21,11 @@ describe('App', () => {
     });
 
     test('App fetches a list of books when the user types', async () => {
-        render(<App />);
+        render(
+            <Provider store={store}>
+                <App />
+            </Provider>
+        );
         const input = screen.getByRole('textbox', { name: 'search' });
         fireEvent.change(input, { target: { value: 'Lord of the Rings' } });
         const LOTRListItems = await screen.findAllByRole('listitem');
