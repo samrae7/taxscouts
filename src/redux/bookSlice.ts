@@ -20,6 +20,9 @@ const initialState: BookState = {
 export const fetchBooks = createAsyncThunk(
     'books/fetchBooks',
     async (searchTerm: string) => {
+        if (searchTerm.length < 2) {
+            return [];
+        }
         const response = await axios.get<{ docs: BookDatum[] }>(
             `https://openlibrary.org/search.json?q=${searchTerm}`
         );
