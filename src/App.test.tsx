@@ -26,7 +26,7 @@ describe('App', () => {
                 <App />
             </Provider>
         );
-        const input = screen.getByRole('textbox', { name: 'search' });
+        const input = screen.getByRole('textbox');
         fireEvent.change(input, { target: { value: 'Lord of the Rings' } });
         const LOTRListItems = await screen.findAllByRole('listitem');
         expect(LOTRListItems).toHaveLength(2);

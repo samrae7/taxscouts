@@ -1,12 +1,14 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import { ThemeProvider } from 'styled-components';
 import { myTheme } from './styled-components/default-theme';
 
-import { useAppSelector, useAppDispatch } from './redux/hooks';
+import { useAppDispatch } from './redux/hooks';
 import { fetchBooks } from './redux/bookSlice';
 import { TextInput } from './styled-components/TextInput';
 import { Nav } from './styled-components/Nav';
+import { Drop, Grommet } from 'grommet';
+import { SearchResults } from './styled-components/SearchResults';
 
 export type BookDatum = {
     cover_i: number;
@@ -24,54 +26,62 @@ export type BookDatum = {
 function App() {
     const dispatch = useAppDispatch();
 
-    const [searchTerm, setSearchTem] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     function handleChange(event: ChangeEvent<HTMLInputElement>) {
         const query = event.target.value;
-        if (query) {
-            setSearchTem(query);
-        }
+        setSearchTerm(query);
     }
 
-    // TODO use pagination?
-
-    // TODO useMemo instead ?
     const debouncedChangeHandler = useCallback(debounce(handleChange, 300), []);
 
     useEffect(() => {
         dispatch(fetchBooks(searchTerm));
     }, [searchTerm, dispatch]);
 
-    const results = useAppSelector((state) => state.books.list);
-    const isLoading = useAppSelector((state) => state.books.isLoading);
+    const grommetTheme = {
+        global: {
+            margin: 0,
+            font: {
+                family: 'Roboto',
+                size: '14px',
+                height: '20px',
+            },
+        },
+        colors: {
+            main: 'black',
+            secondary: 'grey',
+        },
+    };
+
+    const inputRef = useRef(null);
 
     return (
         <ThemeProvider theme={myTheme}>
-            <div className="App">
-                <header>
-                    <Nav>
-                        <label hidden htmlFor="search">
-                            search
-                        </label>
-                        <TextInput
-                            id="search"
-                            onChange={debouncedChangeHandler}
-                            type="text"
-                            placeholder="Quick search..."
-                        />
-                    </Nav>
-                </header>
-
-                {isLoading ? (
-                    <div>Loading...</div>
-                ) : (
-                    <ul>
-                        {results.map(({ title, key }) => {
-                            return <li key={key}>{title}</li>;
-                        })}
-                    </ul>
-                )}
-            </div>
+            <Grommet theme={grommetTheme}>
+                <div className="App">
+                    <header>
+                        <Nav>
+                            <TextInput
+                                onChange={debouncedChangeHandler}
+                                type="text"
+                                placeholder="Quick search..."
+                                ref={inputRef}
+                                name="search"
+                            />
+                            {searchTerm.length > 1 && (
+                                <Drop
+                                    align={{ top: 'bottom' }}
+                                    target={inputRef}
+                                    overflow="visible"
+                                >
+                                    <SearchResults />
+                                </Drop>
+                            )}
+                        </Nav>
+                    </header>
+                </div>
+            </Grommet>
         </ThemeProvider>
     );
 }
