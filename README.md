@@ -1,18 +1,16 @@
-# TaxScouts code exercise
+# TaxScouts
 
-See [instructions for the task](https://taxscouts.notion.site/taxscouts/Practical-Task-Front-End-Engineer-0a3b77bbb3994ba18340d4cb41d0c80e)
-
-## Instructions for running
+## Instructions
 
 ### Prerequites
  - [NodeJS](https://nodejs.org/en)
  - install `yarn` globally ( or if not, use `npx yarn...`)
 
-### Running
+### Running the app
 - cd into the project and run `yarn dev`
 - open the app in your browser at the specified localhost + port
 
-### Tests
+### Running tests
 - Written with React Testing Library.
 - Run `yarn test`
 
