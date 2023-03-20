@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { BookDatum } from '../App';
 import axios from 'axios';
+import { BookDatum } from '../types';
 
 interface BookData {
     list: BookDatum[];
